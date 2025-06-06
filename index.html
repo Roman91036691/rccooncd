@@ -1,0 +1,204 @@
+<!-- ОНОВЛЕНИЙ КОД ТАПАЛКИ --><!DOCTYPE html><html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raccoon Coin</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, #ffeb3b, #2e2e2e) no-repeat fixed;
+      background-size: cover;
+      font-family: monospace;
+      user-select: none;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .container {
+      text-align: center;
+      padding-top: 50px;
+    }
+    #coin {
+      width: 150px;
+      height: 150px;
+      transition: transform 0.1s ease, box-shadow 0.3s ease;
+      animation: bounce 2s infinite;
+    }
+    #coin:active {
+      transform: scale(0.9);
+      box-shadow: 0 0 20px #ffd700;
+    }
+    .score, .energy {
+      font-size: 1.5em;
+      margin: 10px;
+    }
+    .tabs {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: space-around;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      padding: 8px 12px;
+      gap: 10px;
+    }
+    .tab {
+      font-size: 1.5em;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 12px;
+    }
+    .tab:active {
+      transform: scale(0.95);
+    }
+    .active {
+      background: rgba(100, 100, 100, 0.2);
+    }
+    .hidden {
+      display: none !important;
+    }
+    button {
+      font-size: 1em;
+      padding: 10px;
+      margin: 10px auto;
+      border-radius: 12px;
+      border: none;
+      background: #fff7c2;
+      transition: transform 0.2s ease;
+      display: block;
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="game">
+    <div class="score">Монети: <span id="score">0</span></div>
+    <div class="energy">Енергія: <span id="energy">0</span> / <span id="maxEnergy">0</span> 🔋</div>
+    <img src="raccon.png" id="coin" alt="Coin">
+  </div>  <div class="container hidden" id="shop">
+    <h2>🛒 Магазин</h2>
+    <div>
+      <div>Click Power: <span id="clickPower">1</span></div>
+      <button onclick="buyClickPower()">Купити (+1) — <span id="clickPowerPrice">50</span> монет</button>
+    </div>
+    <div>
+      <div>Макс. енергія: <span id="maxEnergyDisplay">500</span></div>
+      <button onclick="buyMaxEnergy()">Купити (+500) — <span id="maxEnergyPrice">100</span> монет</button>
+    </div>
+    <div id="shopMessage" style="margin-top:10px;color:red"></div>
+  </div>  <div class="container hidden" id="quests">
+    <h2>📜 Завдання</h2>
+    <ul>
+      <li>Натисни 100 разів <span id="quest1">❌</span></li>
+      <li>Зароби 1000 монет <span id="quest2">❌</span></li>
+    </ul>
+  </div>  <div class="tabs">
+    <div class="tab active" onclick="switchTab('game', this)">🎮</div>
+    <div class="tab" onclick="switchTab('shop', this)">🛒</div>
+    <div class="tab" onclick="switchTab('quests', this)">📜</div>
+  </div>  <script>
+    let score = parseInt(localStorage.getItem('score')) || 0;
+    let energy = parseInt(localStorage.getItem('energy')) || 500;
+    let maxEnergy = parseInt(localStorage.getItem('maxEnergy')) || 500;
+    let clickPower = parseInt(localStorage.getItem('clickPower')) || 1;
+    let clickPowerPrice = parseInt(localStorage.getItem('clickPowerPrice')) || 50;
+    let maxEnergyPrice = parseInt(localStorage.getItem('maxEnergyPrice')) || 100;
+    let taps = parseInt(localStorage.getItem('taps')) || 0;
+
+    const scoreEl = document.getElementById('score');
+    const energyEl = document.getElementById('energy');
+    const maxEnergyEl = document.getElementById('maxEnergy');
+    const maxEnergyDisplay = document.getElementById('maxEnergyDisplay');
+    const clickPowerEl = document.getElementById('clickPower');
+    const clickPowerPriceEl = document.getElementById('clickPowerPrice');
+    const maxEnergyPriceEl = document.getElementById('maxEnergyPrice');
+    const quest1 = document.getElementById('quest1');
+    const quest2 = document.getElementById('quest2');
+    const shopMessage = document.getElementById('shopMessage');
+
+    function updateUI() {
+      scoreEl.textContent = score;
+      energyEl.textContent = energy;
+      maxEnergyEl.textContent = maxEnergy;
+      maxEnergyDisplay.textContent = maxEnergy;
+      clickPowerEl.textContent = clickPower;
+      clickPowerPriceEl.textContent = clickPowerPrice;
+      maxEnergyPriceEl.textContent = maxEnergyPrice;
+      quest1.textContent = taps >= 100 ? '✅' : '❌';
+      quest2.textContent = score >= 1000 ? '✅' : '❌';
+      shopMessage.textContent = score < Math.min(clickPowerPrice, maxEnergyPrice) ? 'Недостатньо монет для покупок' : '';
+    }
+
+    document.getElementById('coin').addEventListener('click', () => {
+      if (energy <= 0) return;
+      score += clickPower;
+      energy--;
+      taps++;
+      save();
+      updateUI();
+    });
+
+    function buyClickPower() {
+      if (score >= clickPowerPrice) {
+        score -= clickPowerPrice;
+        clickPower++;
+        clickPowerPrice = Math.floor(clickPowerPrice * 2.34);
+        save();
+        updateUI();
+      }
+    }
+
+    function buyMaxEnergy() {
+      if (score >= maxEnergyPrice) {
+        score -= maxEnergyPrice;
+        maxEnergy += 500;
+        energy = maxEnergy;
+        maxEnergyPrice = Math.floor(maxEnergyPrice * 2.34);
+        save();
+        updateUI();
+      }
+    }
+
+    function save() {
+      localStorage.setItem('score', score);
+      localStorage.setItem('energy', energy);
+      localStorage.setItem('maxEnergy', maxEnergy);
+      localStorage.setItem('clickPower', clickPower);
+      localStorage.setItem('clickPowerPrice', clickPowerPrice);
+      localStorage.setItem('maxEnergyPrice', maxEnergyPrice);
+      localStorage.setItem('taps', taps);
+    }
+
+    function switchTab(tabId, el) {
+      document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      updateUI();
+    }
+
+    setInterval(() => {
+      if (energy < maxEnergy) {
+        energy++;
+        save();
+        updateUI();
+      }
+    }, 3000);
+
+    updateUI();
+  </script></body>
+</html>
