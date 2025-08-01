@@ -27,9 +27,6 @@
             background: linear-gradient(180deg, #4a3f00 0%, #1c1910 100%);
             color: var(--text-color);
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
             height: 100vh;
             overflow: hidden;
             user-select: none;
@@ -42,7 +39,7 @@
             width: 100%;
             height: 100%;
             position: relative;
-            padding-bottom: 90px;
+            padding-left: 80px; /* Відступ для вертикальної навігації */
             box-sizing: border-box;
         }
 
@@ -62,8 +59,10 @@
             overflow-y: auto;
         }
         
-        .page::-webkit-scrollbar { display: none; }
-        .page { -ms-overflow-style: none; scrollbar-width: none; }
+        .page::-webkit-scrollbar { width: 6px; }
+        .page::-webkit-scrollbar-track { background: transparent; }
+        .page::-webkit-scrollbar-thumb { background-color: rgba(253, 224, 71, 0.5); border-radius: 3px; }
+        .page { -ms-overflow-style: none; scrollbar-width: thin; scrollbar-color: rgba(253, 224, 71, 0.5) transparent; }
 
         .page.active {
             display: flex;
@@ -103,13 +102,13 @@
         @keyframes particle-animation { to { transform: translate(var(--x), var(--y)); opacity: 0; } }
         
         /* Стилі для магазину, квестів, статистики */
-        #shop-page, #quests-page, #stats-page { padding-top: 30px; padding-bottom: 30px; gap: 15px; }
+        #shop-page, #quests-page, #stats-page, #promo-page { padding-top: 30px; padding-bottom: 30px; gap: 15px; }
         .page-title { font-size: 28px; font-weight: 700; margin-bottom: 15px; }
         .shop-item, .quest-item { display: flex; flex-direction: column; width: 90%; max-width: 400px; background-color: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; }
         .shop-item { flex-direction: row; justify-content: space-between; align-items: center; }
         .shop-item-info, .quest-info { font-size: 18px; font-weight: 600; }
         .shop-item-info small, .quest-info small { font-size: 13px; font-weight: 400; opacity: 0.8; display: block; margin-top: 4px; }
-        .buy-button { background-color: var(--yellow); color: var(--dark-gray); border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background-color 0.2s, transform 0.1s ease; }
+        .buy-button { background-color: var(--yellow); color: var(--dark-gray); border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background-color 0.2s, transform 0.1s ease; -webkit-tap-highlight-color: transparent; }
         .buy-button:hover { background-color: #facc15; }
         .buy-button:active { transform: scale(0.95); }
         .buy-button.rocket-active, .buy-button:disabled { background-color: var(--light-gray); color: var(--text-color); cursor: not-allowed; opacity: 0.7; }
@@ -118,6 +117,15 @@
         .quest-progress-bar-wrapper { flex-grow: 1; height: 12px; background-color: var(--progress-bar-bg); border-radius: 6px; overflow: hidden; }
         .quest-progress-bar { width: 0%; height: 100%; background-color: var(--progress-bar-fill); border-radius: 6px; transition: width 0.5s ease; }
         .claim-quest-btn { margin-top: 10px; width: 100%; }
+        .shop-item-buttons { display: flex; gap: 10px; align-items: center; }
+        
+        /* Стиль для перемикача Тап Бота */
+        .toggle-switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #6B7280; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #34D399; }
+        input:checked + .slider:before { transform: translateX(26px); }
 
         /* Стилі для статистики */
         #stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 500px; }
@@ -126,15 +134,82 @@
         .stat-value { font-size: 22px; font-weight: 700; margin: 8px 0; }
         .stat-title { font-size: 14px; opacity: 0.8; }
 
+        /* Стилі для Колеса Фортуни */
+        #fortune-wheel-page {
+            justify-content: space-between;
+            padding-bottom: 110px;
+        }
+        #wheel-container { position: relative; width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; margin-top: 20px; z-index: 2; }
+        #fortune-wheel { width: 100%; height: 100%; }
+        #wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 40px; height: 30px; z-index: 10; }
+        #spin-wheel-btn { margin-top: auto; font-size: 20px; padding: 15px 40px; min-width: 200px; z-index: 1; }
+
+        /* Стилі для сторінки промокодів */
+        #promo-page { justify-content: center; }
+        #promo-input {
+            width: 90%;
+            max-width: 400px;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 12px;
+            border: 2px solid var(--light-gray);
+            background-color: var(--dark-gray);
+            color: var(--text-color);
+            text-align: center;
+        }
+        #promo-input::placeholder { color: var(--light-gray); }
+        #submit-promo-btn { width: 90%; max-width: 400px; margin-top: 15px; padding: 15px; }
+
+        /* Лічильник спінів */
+        #spin-counter { position: fixed; top: 20px; right: 20px; background-color: rgba(0,0,0,0.4); padding: 8px 15px; border-radius: 12px; font-size: 16px; font-weight: 600; z-index: 1001; backdrop-filter: blur(5px); }
+
         /* Навігація */
-        nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 350px; background-color: rgba(40, 40, 40, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 10px 0; border-radius: 20px; z-index: 100; border: 1px solid rgba(255, 255, 255, 0.1); }
-        .nav-buttons { display: flex; justify-content: space-around; align-items: center; }
-        .nav-button { background: none; border: none; color: var(--text-color); cursor: pointer; padding: 10px; border-radius: 12px; transition: background-color 0.2s; font-size: 28px; line-height: 1; }
-        .nav-button.active { background-color: rgba(255, 255, 255, 0.1); }
+        nav { 
+            position: fixed; 
+            left: 10px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            width: 60px; 
+            height: auto; 
+            background-color: rgba(40, 40, 40, 0.5); 
+            backdrop-filter: blur(10px); 
+            -webkit-backdrop-filter: blur(10px); 
+            padding: 10px 0; 
+            border-radius: 20px; 
+            z-index: 100; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+        .nav-buttons { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 15px;
+        }
+        .nav-button { background: none; border: none; color: var(--text-color); cursor: pointer; padding: 10px; border-radius: 12px; transition: text-shadow 0.3s ease; font-size: 28px; line-height: 1; -webkit-tap-highlight-color: transparent; }
+        .nav-button.active { text-shadow: 0 0 15px var(--yellow), 0 0 5px var(--yellow); }
         
         /* Повідомлення */
-        #notification { position: fixed; bottom: 110px; background-color: var(--notification-bg); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 600; z-index: 1000; opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease; pointer-events: none; }
-        #notification.show { opacity: 1; transform: translateY(0); }
+        #notification { 
+            position: fixed; 
+            top: 20px; 
+            left: 50%; 
+            background-color: rgba(40, 40, 40, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white; 
+            padding: 15px 25px; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            z-index: 2001; 
+            opacity: 0; 
+            transform: translate(-50%, -100px); 
+            transition: opacity 0.4s ease, transform 0.4s ease; 
+            cursor: grab;
+        }
+        #notification.show { opacity: 1; transform: translate(-50%, 0); }
+        #notification.swiping { transition: none; }
+        #notification.swipe-out { transform: translateX(150%); opacity: 0; transition: transform 0.4s ease, opacity 0.4s ease; }
         
         /* Модальне вікно */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 2000; }
@@ -148,33 +223,86 @@
 
         /* Адаптивність */
         @media (max-width: 480px) {
+            .page-container { padding-left: 70px; }
+            nav { width: 50px; }
             #score-display { font-size: 40px; }
             #coin { width: 200px; height: 200px; }
             .shop-item-info, .quest-info { font-size: 16px; }
             .buy-button { padding: 8px 16px; }
             #stats-grid { grid-template-columns: 1fr; }
+            #wheel-container { width: 280px; height: 280px; }
         }
 
     </style>
 </head>
 <body>
+    <div id="spin-counter">🎡 4</div>
 
     <div class="page-container">
         <!-- Головна сторінка гри -->
         <div id="game-page" class="page active">
             <div id="top-ui-container"><div id="score-display">0</div><button id="daily-reward-button">🎁</button></div>
             <div id="energy-container"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#34d399" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div id="energy-bar-container"><div id="energy-bar"></div></div><div id="energy-text">175 / 175</div></div>
-            <div id="coin-container"><img id="coin" src="https://i.ibb.co/YT33tqDJ/9f48c03a-839c-476d-a766-ad66674ae1de-removalai-preview.png" alt="[Зображення монети єнота]"></div>
+            <div id="coin-container"><img id="coin" src="https://i.ibb.co/cXyq1bpQ/3bc6fbe4-9596-4477-96e0-c0ba678d5d1a.png" alt="[Зображення монети єнота]"></div>
         </div>
 
         <!-- Сторінка магазину -->
-        <div id="shop-page" class="page"><h1 class="page-title">Магазин</h1><div class="shop-item"><div class="shop-item-info">Сила кліку<small id="click-power-level">Рівень: 1 (+1 за клік)</small></div><button id="buy-click-power" class="buy-button">30</button></div><div class="shop-item"><div class="shop-item-info">Макс. енергія<small id="max-energy-level">Рівень: 1 (175 макс.)</small></div><button id="buy-max-energy" class="buy-button">27</button></div><div class="shop-item"><div class="shop-item-info">Ракета<small id="rocket-level">x2.7 на 6.0 сек</small></div><button id="buy-rocket" class="buy-button">65</button></div></div>
+        <div id="shop-page" class="page">
+            <h1 class="page-title">Магазин</h1>
+            <div class="shop-item">
+                <div class="shop-item-info">Сила кліку<small id="click-power-level">Рівень: 1 (+1 за клік)</small></div>
+                <button id="buy-click-power" class="buy-button">30</button>
+            </div>
+            <div class="shop-item">
+                <div class="shop-item-info">Макс. енергія<small id="max-energy-level">Рівень: 1 (175 макс.)</small></div>
+                <button id="buy-max-energy" class="buy-button">27</button>
+            </div>
+            <div class="shop-item">
+                <div class="shop-item-info">Ракета<small id="rocket-level">x2.7 на 6.0 сек</small></div>
+                <button id="buy-rocket" class="buy-button">65</button>
+            </div>
+            <div class="shop-item">
+                <div class="shop-item-info">Тап Бот<small id="tap-bot-level">Рівень: 0 (1 клік / 3.0с)</small></div>
+                <div class="shop-item-buttons">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-tap-bot-checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <button id="buy-tap-bot" class="buy-button">730</button>
+                </div>
+            </div>
+             <div class="shop-item">
+                <div class="shop-item-info">Поновлення енергії<small>Відновити енергію до максимуму</small></div>
+                <button id="buy-energy-refill" class="buy-button">280</button>
+            </div>
+        </div>
         
         <!-- Сторінка квестів -->
         <div id="quests-page" class="page"><h1 class="page-title">Квести</h1><div id="quest-list" style="width: 100%; display: flex; flex-direction: column; gap: 15px; align-items: center;"></div></div>
         
         <!-- Сторінка статистики -->
         <div id="stats-page" class="page"><h1 class="page-title">Статистика</h1><div id="stats-grid"></div></div>
+
+        <!-- Сторінка Колеса Фортуни -->
+        <div id="fortune-wheel-page" class="page">
+            <h1 class="page-title">Колесо Фортуни</h1>
+            <div id="wheel-container">
+                <canvas id="fortune-wheel"></canvas>
+                <div id="wheel-pointer">
+                    <svg viewBox="0 0 40 30" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; fill: var(--yellow);">
+                        <path d="M20,30 L2,5 C-2,-5 42,-5 38,5 Z" />
+                    </svg>
+                </div>
+            </div>
+            <button id="spin-wheel-btn" class="buy-button">Крутити</button>
+        </div>
+
+        <!-- Сторінка Промокодів -->
+        <div id="promo-page" class="page">
+            <h1 class="page-title">Промокоди</h1>
+            <input type="text" id="promo-input" placeholder="Введіть промокод">
+            <button id="submit-promo-btn" class="buy-button">Активувати</button>
+        </div>
     </div>
 
     <!-- Навігаційна панель -->
@@ -183,6 +311,8 @@
             <button id="home-btn" class="nav-button active">🦝</button>
             <button id="stats-btn" class="nav-button">📊</button>
             <button id="quests-btn" class="nav-button">🏆</button>
+            <button id="wheel-btn" class="nav-button">🎡</button>
+            <button id="promo-btn" class="nav-button">🎫</button>
             <button id="shop-btn" class="nav-button">🛒</button>
         </div>
     </nav>
@@ -202,16 +332,21 @@
             const energyBar = document.getElementById('energy-bar');
             const energyText = document.getElementById('energy-text');
             const notification = document.getElementById('notification');
+            const spinCounterDisplay = document.getElementById('spin-counter');
             
             // Навігація
             const homeBtn = document.getElementById('home-btn');
             const shopBtn = document.getElementById('shop-btn');
             const questsBtn = document.getElementById('quests-btn');
             const statsBtn = document.getElementById('stats-btn');
+            const wheelBtn = document.getElementById('wheel-btn');
+            const promoBtn = document.getElementById('promo-btn');
             const gamePage = document.getElementById('game-page');
             const shopPage = document.getElementById('shop-page');
             const questsPage = document.getElementById('quests-page');
             const statsPage = document.getElementById('stats-page');
+            const wheelPage = document.getElementById('fortune-wheel-page');
+            const promoPage = document.getElementById('promo-page');
             const questListContainer = document.getElementById('quest-list');
             const statsGridContainer = document.getElementById('stats-grid');
 
@@ -219,9 +354,13 @@
             const buyClickPowerBtn = document.getElementById('buy-click-power');
             const buyMaxEnergyBtn = document.getElementById('buy-max-energy');
             const buyRocketBtn = document.getElementById('buy-rocket');
+            const buyTapBotBtn = document.getElementById('buy-tap-bot');
+            const toggleTapBotCheckbox = document.getElementById('toggle-tap-bot-checkbox');
+            const buyEnergyRefillBtn = document.getElementById('buy-energy-refill');
             const clickPowerLevelDisplay = document.getElementById('click-power-level');
             const maxEnergyLevelDisplay = document.getElementById('max-energy-level');
             const rocketLevelDisplay = document.getElementById('rocket-level');
+            const tapBotLevelDisplay = document.getElementById('tap-bot-level');
 
             // Щоденні нагороди
             const dailyRewardModal = document.getElementById('daily-reward-modal');
@@ -229,6 +368,15 @@
             const claimRewardBtn = document.getElementById('claim-reward-btn');
             const rewardAmountSpan = document.getElementById('reward-amount');
             const dailyRewardBtn = document.getElementById('daily-reward-button');
+
+            // Колесо Фортуни
+            const wheelCanvas = document.getElementById('fortune-wheel');
+            const spinBtn = document.getElementById('spin-wheel-btn');
+            const ctx = wheelCanvas.getContext('2d');
+
+            // Промокоди
+            const promoInput = document.getElementById('promo-input');
+            const submitPromoBtn = document.getElementById('submit-promo-btn');
 
             // --- Дані гри ---
             const allQuests = [
@@ -268,7 +416,10 @@
                 score: 0, energy: 175, maxEnergy: 175, clickPower: 1,
                 rocketActive: false, rocketMultiplier: 2.7, rocketDuration: 6,
                 easterEggTriggered: false, lastRewardDate: null,
-                costs: { clickPower: 30, maxEnergy: 27, rocket: 65 },
+                dailySpins: 4, lastSpinDate: null,
+                tempCritChanceBonus: 0, tempEnergyRegenBonus: 1,
+                tapBotLevel: 0, tapBotSpeed: 3, tapBotEnabled: false, lastOfflineTimestamp: null,
+                costs: { clickPower: 30, maxEnergy: 27, rocket: 65, tapBot: 730 },
                 levels: { clickPower: 1, maxEnergy: 1, rocket: 1 },
                 stats: {
                     totalClicks: 0, criticalClicks: 0, totalCoinsEarned: 0, energySpent: 0,
@@ -276,10 +427,12 @@
                     clickPowerLevel: 1, energyLevel: 1, easterEggFound: 0, timePlayed: 0,
                 },
                 claimedQuests: {},
+                usedPromoCodes: [],
             };
 
             let gameState = {};
             let dailyRewardAmount = 0;
+            let tapBotInterval = null;
 
             // --- Функції гри ---
             function loadGame() {
@@ -291,14 +444,25 @@
                     gameState.levels = { ...defaultState.levels, ...parsedState.levels };
                     gameState.stats = { ...defaultState.stats, ...parsedState.stats };
                     gameState.claimedQuests = parsedState.claimedQuests || {};
+                    gameState.usedPromoCodes = parsedState.usedPromoCodes || [];
                 } else {
                     gameState = JSON.parse(JSON.stringify(defaultState));
                 }
+                
+                calculateOfflineEarnings();
+                
                 checkDailyReward();
+                checkDailySpins();
                 updateUI();
+                drawWheel(0);
+                
+                if (gameState.tapBotEnabled) {
+                    startTapBot();
+                }
             }
 
             function saveGame() {
+                gameState.lastOfflineTimestamp = Date.now();
                 localStorage.setItem('raccoonCoinState', JSON.stringify(gameState));
             }
 
@@ -314,13 +478,28 @@
                 clickPowerLevelDisplay.innerHTML = `Рівень: ${gameState.levels.clickPower} (+${gameState.clickPower} за клік)`;
                 maxEnergyLevelDisplay.innerHTML = `Рівень: ${gameState.levels.maxEnergy} (${gameState.maxEnergy} макс.)`;
                 rocketLevelDisplay.innerHTML = `x${gameState.rocketMultiplier.toFixed(1)} на ${gameState.rocketDuration.toFixed(1)} сек`;
+                updateTapBotUI();
+                updateSpinCounterUI();
+            }
+            
+            function updateSpinCounterUI() {
+                spinCounterDisplay.innerHTML = `🎡 ${gameState.dailySpins}`;
+                spinBtn.disabled = gameState.dailySpins <= 0 || isSpinning;
+                spinBtn.textContent = gameState.dailySpins > 0 ? 'Крутити' : 'Спіни скінчились';
             }
 
+            let notificationTimeout;
             function showNotification(message, type = 'error') {
+                clearTimeout(notificationTimeout);
                 notification.textContent = message;
-                notification.style.backgroundColor = type === 'bonus' ? 'var(--bonus-notification-bg)' : 'var(--notification-bg)';
+                notification.style.backgroundColor = type === 'bonus' ? 'rgba(52, 211, 153, 0.6)' : 'rgba(239, 68, 68, 0.6)';
+                notification.classList.remove('swipe-out');
+                notification.style.transform = 'translateX(-50%) translateY(-100px)';
                 notification.classList.add('show');
-                setTimeout(() => notification.classList.remove('show'), 4000);
+                
+                notificationTimeout = setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 4000);
             }
             
             function handleCoinClick(event) {
@@ -328,8 +507,15 @@
                 gameState.energy -= 1;
                 gameState.stats.energySpent += 1;
                 gameState.stats.totalClicks += 1;
-                let clickValue = gameState.clickPower, isCritical = false;
-                if (Math.random() < 0.15) { clickValue *= 2; isCritical = true; gameState.stats.criticalClicks += 1; createParticles(); }
+                let clickValue = gameState.clickPower;
+                let isCritical = false;
+                const critChance = 0.15 + gameState.tempCritChanceBonus;
+                if (Math.random() < critChance) { 
+                    clickValue *= 2; 
+                    isCritical = true; 
+                    gameState.stats.criticalClicks += 1; 
+                    createParticles(); 
+                }
                 if (gameState.rocketActive) { clickValue *= gameState.rocketMultiplier; }
                 clickValue = Math.round(clickValue);
                 gameState.score += clickValue;
@@ -338,13 +524,12 @@
                 scoreDisplay.classList.add('score-pop');
                 scoreDisplay.addEventListener('animationend', () => scoreDisplay.classList.remove('score-pop'), { once: true });
                 updateUI();
-                // Не зберігаємо на кожен клік для продуктивності, а раз на секунду
             }
 
             // --- Навігація ---
             function switchPage(pageId) {
-                [gamePage, shopPage, questsPage, statsPage].forEach(p => p.classList.remove('active'));
-                [homeBtn, shopBtn, questsBtn, statsBtn].forEach(b => b.classList.remove('active'));
+                [gamePage, shopPage, questsPage, statsPage, wheelPage, promoPage].forEach(p => p.classList.remove('active'));
+                [homeBtn, shopBtn, questsBtn, statsBtn, wheelBtn, promoBtn].forEach(b => b.classList.remove('active'));
                 
                 const page = document.getElementById(pageId);
                 page.classList.add('active');
@@ -352,12 +537,23 @@
                 if (pageId === 'quests-page') { questsBtn.classList.add('active'); populateQuests(); } 
                 else if (pageId === 'shop-page') { shopBtn.classList.add('active'); } 
                 else if (pageId === 'stats-page') { statsBtn.classList.add('active'); populateStats(); }
+                else if (pageId === 'fortune-wheel-page') { 
+                    wheelBtn.classList.add('active');
+                    if (isSpinning) {
+                        isSpinning = false;
+                        if(animationFrameId) cancelAnimationFrame(animationFrameId);
+                    }
+                    updateSpinCounterUI();
+                }
+                else if (pageId === 'promo-page') { promoBtn.classList.add('active'); }
                 else { homeBtn.classList.add('active'); }
             }
             homeBtn.addEventListener('click', () => switchPage('game-page'));
             shopBtn.addEventListener('click', () => switchPage('shop-page'));
             questsBtn.addEventListener('click', () => switchPage('quests-page'));
             statsBtn.addEventListener('click', () => switchPage('stats-page'));
+            wheelBtn.addEventListener('click', () => switchPage('fortune-wheel-page'));
+            promoBtn.addEventListener('click', () => switchPage('promo-page'));
 
             // --- Сторінки ---
             function populateQuests() {
@@ -391,7 +587,7 @@
                     { icon: '💪', title: 'Сила кліку', value: gameState.clickPower.toLocaleString() },
                     { icon: '⚡️', title: 'Макс. енергія', value: gameState.maxEnergy.toLocaleString() },
                     { icon: '⏰', title: 'Час у грі', value: formatTime(gameState.stats.timePlayed) },
-                    { icon: '🪙', title: 'Поточний баланс', value: Math.floor(gameState.score).toLocaleString() },
+                    { icon: '🤖', title: 'Рівень Тап Бота', value: gameState.tapBotLevel },
                 ];
 
                 statsToDisplay.forEach(stat => {
@@ -416,11 +612,312 @@
                     }
                 }
             });
+            
+            // --- Колесо Фортуни ---
+            const wheelSegments = [
+                { text: '25k', type: 'coins', value: 25000 },
+                { text: 'Ракета', type: 'rocket' },
+                { text: 'x2 Реген', type: 'energy_regen', duration: 60 },
+                { text: '+10% Крит', type: 'crit_chance', duration: 60, value: 0.1 },
+                { text: '2.5k', type: 'coins', value: 2500 },
+                { text: '+500 Ен', type: 'energy_boost', value: 500 },
+                { text: '1k', type: 'coins', value: 1000 },
+                { text: '100', type: 'coins', value: 100 },
+            ];
+            let currentAngle = 0;
+            let isSpinning = false;
+            let animationFrameId = null;
+            const segmentAngleRad = (2 * Math.PI) / wheelSegments.length;
+
+            function drawWheel(rotationAngle = 0) {
+                const container = document.getElementById('wheel-container');
+                wheelCanvas.width = container.clientWidth;
+                wheelCanvas.height = container.clientHeight;
+                const radius = wheelCanvas.width / 2;
+                const center = radius;
+
+                ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+                ctx.save();
+                ctx.translate(center, center);
+                ctx.rotate(rotationAngle);
+
+                wheelSegments.forEach((segment, i) => {
+                    const startAngle = i * segmentAngleRad;
+                    
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.arc(0, 0, radius - 5, startAngle, startAngle + segmentAngleRad);
+                    ctx.closePath();
+                    ctx.clip(); 
+
+                    ctx.fillStyle = '#555960';
+                    ctx.fill();
+
+                    ctx.fillStyle = 'white';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    const textAngle = startAngle + segmentAngleRad / 2;
+                    ctx.save();
+                    ctx.rotate(textAngle);
+                    
+                    ctx.font = 'bold 16px Inter';
+                    ctx.fillText(segment.text, radius * 0.65, 0);
+                    
+                    ctx.restore();
+                    ctx.restore(); 
+                });
+
+                wheelSegments.forEach((segment, i) => {
+                    const startAngle = i * segmentAngleRad;
+                    ctx.beginPath();
+                    ctx.moveTo(0,0);
+                    ctx.arc(0, 0, radius - 5, startAngle, startAngle);
+                    ctx.lineTo(0,0);
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                });
+
+                ctx.beginPath();
+                ctx.arc(0,0,20,0, 2*Math.PI);
+                ctx.fillStyle = '#4a3f00';
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(0,0,15,0, 2*Math.PI);
+                ctx.fillStyle = '#1c1910';
+                ctx.fill();
+
+                ctx.restore();
+            }
+
+            function checkDailySpins() {
+                const today = new Date().toDateString();
+                if (gameState.lastSpinDate !== today) {
+                    gameState.dailySpins = 4;
+                    gameState.lastSpinDate = today;
+                }
+                updateSpinCounterUI();
+            }
+
+            spinBtn.addEventListener('click', () => {
+                if (isSpinning || gameState.dailySpins <= 0) return;
+                
+                gameState.dailySpins--;
+                isSpinning = true;
+                updateSpinCounterUI();
+
+                const spinDuration = 7000;
+                const totalRotation = (Math.random() * 2 + 5) * 2 * Math.PI;
+                const startAngle = currentAngle;
+                let startTime = null;
+
+                function animateWheel(timestamp) {
+                    if (!startTime) startTime = timestamp;
+                    const elapsedTime = timestamp - startTime;
+                    
+                    if (elapsedTime >= spinDuration) {
+                        isSpinning = false;
+                        updateSpinCounterUI();
+                        const finalAngle = (startAngle + totalRotation) % (2 * Math.PI);
+                        const pointerAngle = 1.5 * Math.PI; // Top of the wheel
+                        const correctedAngle = (2 * Math.PI + pointerAngle - finalAngle) % (2 * Math.PI);
+                        const winningSegmentIndex = Math.floor(correctedAngle / segmentAngleRad);
+                        const prize = wheelSegments[winningSegmentIndex];
+                        awardPrize(prize);
+                        return;
+                    }
+
+                    const progress = elapsedTime / spinDuration;
+                    const easedProgress = 1 - Math.pow(1 - progress, 4);
+                    currentAngle = startAngle + totalRotation * easedProgress;
+                    drawWheel(currentAngle);
+
+                    animationFrameId = requestAnimationFrame(animateWheel);
+                }
+                animationFrameId = requestAnimationFrame(animateWheel);
+            });
+
+            function awardPrize(prize) {
+                switch (prize.type) {
+                    case 'coins':
+                        gameState.score += prize.value;
+                        showNotification(`Ви виграли ${prize.value} монет!`, 'bonus');
+                        break;
+                    case 'energy_boost':
+                        gameState.energy = Math.min(gameState.maxEnergy, gameState.energy + prize.value);
+                        showNotification(`Ви отримали +${prize.value} енергії!`, 'bonus');
+                        break;
+                    case 'rocket':
+                        if (gameState.score >= gameState.costs.rocket) {
+                             buyRocketBtn.click();
+                        } else {
+                            showNotification('Безкоштовна ракета!', 'bonus');
+                            gameState.rocketActive = true; 
+                            gameState.stats.rocketsUsed++;
+                            setTimeout(() => { gameState.rocketActive = false; }, gameState.rocketDuration * 1000);
+                        }
+                        break;
+                    case 'energy_regen':
+                        showNotification(`Подвоєна регенерація енергії на ${prize.duration}с!`, 'bonus');
+                        gameState.tempEnergyRegenBonus = 2;
+                        setTimeout(() => {
+                            gameState.tempEnergyRegenBonus = 1;
+                            showNotification('Бонус регенерації закінчився.');
+                        }, prize.duration * 1000);
+                        break;
+                     case 'crit_chance':
+                        showNotification(`Шанс крит. удару +10% на ${prize.duration}с!`, 'bonus');
+                        gameState.tempCritChanceBonus = prize.value;
+                        setTimeout(() => {
+                            gameState.tempCritChanceBonus = 0;
+                            showNotification('Бонус крит. шансу закінчився.');
+                        }, prize.duration * 1000);
+                        break;
+                }
+                updateUI();
+            }
+
 
             // --- Покупки ---
             buyClickPowerBtn.addEventListener('click', () => { const c = Math.round(gameState.costs.clickPower); if (gameState.score >= c) { gameState.score -= c; gameState.clickPower++; gameState.levels.clickPower++; gameState.stats.clickPowerUpgrades++; gameState.stats.clickPowerLevel = gameState.levels.clickPower; gameState.costs.clickPower *= 1.5; updateUI(); } else { showNotification("Недостатньо очок!"); } });
             buyMaxEnergyBtn.addEventListener('click', () => { const c = Math.round(gameState.costs.maxEnergy); if (gameState.score >= c) { gameState.score -= c; gameState.maxEnergy += 45; gameState.levels.maxEnergy++; gameState.stats.energyUpgrades++; gameState.stats.energyLevel = gameState.levels.maxEnergy; gameState.costs.maxEnergy *= 1.5; updateUI(); } else { showNotification("Недостатньо очок!"); } });
             buyRocketBtn.addEventListener('click', () => { if (gameState.rocketActive) { showNotification("Ракета вже активована!"); return; } const c = Math.round(gameState.costs.rocket); if (gameState.score >= c) { gameState.score -= c; gameState.rocketActive = true; gameState.stats.rocketsUsed++; buyRocketBtn.classList.add('rocket-active'); buyRocketBtn.disabled = true; setTimeout(() => { gameState.rocketActive = false; buyRocketBtn.classList.remove('rocket-active'); buyRocketBtn.disabled = false; showNotification("Дія ракети закінчилась"); }, gameState.rocketDuration * 1000); gameState.rocketDuration += 0.2; gameState.levels.rocket++; gameState.costs.rocket *= 1.5; showNotification("Ракета активована!", "bonus"); updateUI(); } else { showNotification("Недостатньо очок!"); } });
+            buyEnergyRefillBtn.addEventListener('click', () => { const cost = 280; if (gameState.score >= cost) { gameState.score -= cost; gameState.energy = gameState.maxEnergy; showNotification('Енергію поновлено!', 'bonus'); updateUI(); } else { showNotification("Недостатньо очок!"); } });
+
+            // --- Тап Бот ---
+            function updateTapBotUI() {
+                const cost = Math.round(gameState.costs.tapBot);
+                buyTapBotBtn.textContent = gameState.tapBotLevel === 0 ? cost : `+ ${cost}`;
+                tapBotLevelDisplay.innerHTML = `Рівень: ${gameState.tapBotLevel} (1 клік / ${gameState.tapBotSpeed.toFixed(2)}с)`;
+                
+                toggleTapBotCheckbox.checked = gameState.tapBotEnabled;
+                toggleTapBotCheckbox.parentElement.style.display = gameState.tapBotLevel > 0 ? 'inline-block' : 'none';
+
+                if (gameState.tapBotSpeed <= 0.7) {
+                    buyTapBotBtn.disabled = true;
+                }
+            }
+
+            function startTapBot() {
+                if (tapBotInterval) clearInterval(tapBotInterval);
+                if (gameState.tapBotLevel > 0) {
+                    tapBotInterval = setInterval(() => {
+                        if (gameState.tapBotEnabled) {
+                            gameState.score += gameState.clickPower;
+                            gameState.stats.totalCoinsEarned += gameState.clickPower;
+                            updateUI();
+                        }
+                    }, gameState.tapBotSpeed * 1000);
+                }
+            }
+
+            function calculateOfflineEarnings() {
+                if (gameState.tapBotEnabled && gameState.lastOfflineTimestamp) {
+                    const offlineSeconds = (Date.now() - gameState.lastOfflineTimestamp) / 1000;
+                    if (offlineSeconds > 1) {
+                        const offlineClicks = Math.floor(offlineSeconds / gameState.tapBotSpeed);
+                        const offlineEarnings = offlineClicks * gameState.clickPower;
+                        if (offlineEarnings > 0) {
+                            gameState.score += offlineEarnings;
+                            gameState.stats.totalCoinsEarned += offlineEarnings;
+                            showNotification(`Тап бот заробив ${Math.round(offlineEarnings)} монет, поки ви були офлайн!`, 'bonus');
+                        }
+                    }
+                }
+            }
+
+            toggleTapBotCheckbox.addEventListener('change', () => {
+                gameState.tapBotEnabled = toggleTapBotCheckbox.checked;
+                if (gameState.tapBotEnabled) {
+                    startTapBot();
+                } else {
+                    if (tapBotInterval) clearInterval(tapBotInterval);
+                }
+                updateTapBotUI();
+            });
+
+            buyTapBotBtn.addEventListener('click', () => {
+                const cost = Math.round(gameState.costs.tapBot);
+                if (gameState.score >= cost) {
+                    if (gameState.tapBotSpeed <= 0.7) {
+                        showNotification("Досягнуто максимального рівня!");
+                        return;
+                    }
+                    gameState.score -= cost;
+                    gameState.tapBotLevel++;
+                    gameState.tapBotSpeed = Math.max(0.7, gameState.tapBotSpeed - 0.25);
+                    gameState.costs.tapBot *= 1.5;
+                    
+                    if (!gameState.tapBotEnabled) {
+                        gameState.tapBotEnabled = true;
+                    }
+                    startTapBot();
+                    updateTapBotUI();
+                } else {
+                    showNotification("Недостатньо очок!");
+                }
+            });
+
+            // --- Промокоди ---
+            const promoCodes = {
+                'begizhmot': { type: 'spins', value: 2 },
+                'pig_777': { type: 'coins', value: 10000 },
+                'planka_9876': { type: 'clickPowerLevels', value: 5 },
+                'kentarnya': { type: 'coins', value: 1000 },
+                'chocolatka_112233': { type: 'maxTapBot' },
+                'raccoon1221': { type: 'balance_bonus' },
+                'gedeshka': { type: 'clickPowerLevels', value: 15 },
+                'tiktok_mode': { type: 'spins', value: 8 }
+            };
+
+            submitPromoBtn.addEventListener('click', () => {
+                const code = promoInput.value.trim().toLowerCase();
+                if (!code) return;
+
+                if (gameState.usedPromoCodes.includes(code)) {
+                    showNotification("Цей промокод вже використано!");
+                    return;
+                }
+
+                const promo = promoCodes[code];
+                if (promo) {
+                    switch (promo.type) {
+                        case 'spins':
+                            gameState.dailySpins += promo.value;
+                            showNotification(`Ви отримали ${promo.value} спіни!`, 'bonus');
+                            break;
+                        case 'coins':
+                            gameState.score += promo.value;
+                            showNotification(`Ви отримали ${promo.value} монет!`, 'bonus');
+                            break;
+                        case 'clickPowerLevels':
+                            for (let i = 0; i < promo.value; i++) {
+                                gameState.clickPower++;
+                                gameState.levels.clickPower++;
+                            }
+                            showNotification(`Силу кліку збільшено на ${promo.value} рівнів!`, 'bonus');
+                            break;
+                        case 'maxTapBot':
+                            gameState.tapBotLevel = 10;
+                            gameState.tapBotSpeed = 0.7;
+                            if (!gameState.tapBotEnabled) gameState.tapBotEnabled = true;
+                            startTapBot();
+                            showNotification('Тап Бот прокачано до максимуму!', 'bonus');
+                            break;
+                        case 'balance_bonus':
+                            const bonus = Math.floor(gameState.score / 3);
+                            gameState.score += bonus;
+                            showNotification(`Ви отримали бонус ${bonus} монет!`, 'bonus');
+                            break;
+                    }
+                    gameState.usedPromoCodes.push(code);
+                    promoInput.value = '';
+                    updateUI();
+                } else {
+                    showNotification("Невірний промокод!");
+                }
+            });
 
             // --- Пасхалка ---
             let easterEggTimer;
@@ -443,8 +940,15 @@
             function showClickValue(value, isCritical, event) { const d = document.createElement('div'); d.id = 'click-value-display'; d.textContent = `+${value}`; if (isCritical) d.classList.add('critical-hit-text'); const r = coinContainer.getBoundingClientRect(), x = event.clientX - r.left, y = event.clientY - r.top; d.style.left = `${x}px`; d.style.top = `${y}px`; coinContainer.appendChild(d); setTimeout(() => d.remove(), 1000); }
             coin.addEventListener('click', handleCoinClick);
             coin.addEventListener('touchstart', (e) => { e.preventDefault(); handleCoinClick(e.touches[0]); }, { passive: false });
-            setInterval(() => { if (gameState.energy < gameState.maxEnergy) { gameState.energy += 1; if (gameState.energy > gameState.maxEnergy) gameState.energy = gameState.maxEnergy; updateUI(); } }, 2000);
-            setInterval(() => { gameState.stats.timePlayed++; saveGame(); }, 1000); // Зберігаємо гру раз на секунду
+            setInterval(() => {
+                const energyToRegen = 1 * gameState.tempEnergyRegenBonus;
+                if (gameState.energy < gameState.maxEnergy) { 
+                    gameState.energy += energyToRegen; 
+                    if (gameState.energy > gameState.maxEnergy) gameState.energy = gameState.maxEnergy; 
+                    updateUI(); 
+                } 
+            }, 2000);
+            setInterval(() => { gameState.stats.timePlayed++; saveGame(); }, 1000);
 
             // Ініціалізація
             loadGame();
@@ -453,6 +957,3 @@
 </body>
 </html>
 
-    updateUI();
-  </script></body>
-</html>
